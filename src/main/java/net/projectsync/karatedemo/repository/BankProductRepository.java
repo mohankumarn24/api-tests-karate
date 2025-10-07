@@ -1,7 +1,7 @@
-package ru.igorivkin.karatedemo.repository;
+package net.projectsync.karatedemo.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.igorivkin.karatedemo.model.BankProduct;
+import net.projectsync.karatedemo.model.BankProduct;
 
 public interface BankProductRepository extends JpaRepository<BankProduct, Long> {
 

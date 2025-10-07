@@ -1,12 +1,12 @@
-package ru.igorivkin.karatedemo.service;
+package net.projectsync.karatedemo.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.igorivkin.karatedemo.model.BankProduct;
-import ru.igorivkin.karatedemo.repository.BankProductRepository;
+import net.projectsync.karatedemo.model.BankProduct;
+import net.projectsync.karatedemo.repository.BankProductRepository;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;

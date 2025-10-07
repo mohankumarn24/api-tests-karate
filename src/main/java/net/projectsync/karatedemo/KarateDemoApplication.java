@@ -1,4 +1,4 @@
-package ru.igorivkin.karatedemo;
+package net.projectsync.karatedemo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,3 +10,9 @@ public class KarateDemoApplication {
 		SpringApplication.run(KarateDemoApplication.class, args);
 	}
 }
+
+/**
+ * We have added unit tests and api tests for this project to achieve more code coverage
+ * - JUnit test cases (net.projectsync.karatedemo)
+ * - Karate API tests (karate.bankproducts)
+ */

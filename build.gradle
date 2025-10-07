@@ -5,7 +5,7 @@ plugins {
     id 'jacoco' // <-- enable JaCoCo for code coverage
 }
 
-group = 'ru.igorivkin'
+group = 'net.projectsync'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 

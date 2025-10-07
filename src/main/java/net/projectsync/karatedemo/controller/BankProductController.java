@@ -1,11 +1,10 @@
-package ru.igorivkin.karatedemo.controller;
+package net.projectsync.karatedemo.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.igorivkin.karatedemo.model.BankProduct;
-import ru.igorivkin.karatedemo.service.BankProductService;
-
+import net.projectsync.karatedemo.model.BankProduct;
+import net.projectsync.karatedemo.service.BankProductService;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ru.igorivkin.karatedemo;
+package net.projectsync.karatedemo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

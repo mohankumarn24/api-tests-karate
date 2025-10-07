@@ -1,4 +1,4 @@
-package ru.igorivkin.karatedemo.controller;
+package net.projectsync.karatedemo.controller;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -6,8 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import ru.igorivkin.karatedemo.model.BankProduct;
-import ru.igorivkin.karatedemo.service.BankProductService;
+import net.projectsync.karatedemo.model.BankProduct;
+import net.projectsync.karatedemo.service.BankProductService;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

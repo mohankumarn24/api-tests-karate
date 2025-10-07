@@ -1,10 +1,9 @@
-package ru.igorivkin.karatedemo.service;
+package net.projectsync.karatedemo.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.igorivkin.karatedemo.model.BankProduct;
-import ru.igorivkin.karatedemo.repository.BankProductRepository;
-
+import net.projectsync.karatedemo.model.BankProduct;
+import net.projectsync.karatedemo.repository.BankProductRepository;
 import java.util.List;
 import java.util.Optional;
 
