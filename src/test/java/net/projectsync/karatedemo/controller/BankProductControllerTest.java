@@ -1,141 +1,157 @@
 package net.projectsync.karatedemo.controller;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.projectsync.karatedemo.model.BankProduct;
 import net.projectsync.karatedemo.service.BankProductService;
-import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import java.util.Arrays;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
 import java.util.List;
+import java.util.Optional;
 
-@ExtendWith(MockitoExtension.class)
-class BankProductControllerUnitTest {
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-    @Mock
+@WebMvcTest(BankProductController.class)
+class BankProductControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
     private BankProductService service;
 
-    @InjectMocks
-    private BankProductController controller;
-
     // ----------------------------
-    // CREATE
+    // CREATE: POST /bankproducts
     // ----------------------------
     @Test
-    void testCreateProduct() {
-        BankProduct product = new BankProduct("New Product");
-        BankProduct created = new BankProduct("New Product");
-        created.setId(1L);
+    void testCreateProduct() throws Exception {
+        BankProduct request = new BankProduct("Savings Account");
+        BankProduct saved = new BankProduct("Savings Account");
+        saved.setId(1L);
 
-        when(service.createProduct(product)).thenReturn(created);
+        Mockito.when(service.createProduct(any(BankProduct.class))).thenReturn(saved);
 
-        ResponseEntity<BankProduct> response = controller.createProduct(product);
-
-        assertEquals(201, response.getStatusCodeValue());
-        assertEquals(created, response.getBody());
-        verify(service).createProduct(product);
+        mockMvc.perform(post("/bankproducts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/bankproducts/1"))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("Savings Account"));
     }
 
     // ----------------------------
-    // READ BY ID
+    // READ: GET /bankproducts/{id} (found)
     // ----------------------------
     @Test
-    void testGetProductByIdFound() {
-        BankProduct product = new BankProduct("Test");
+    void testGetProductByIdFound() throws Exception {
+        BankProduct product = new BankProduct("Savings Account");
         product.setId(1L);
-        when(service.getProductById(1L)).thenReturn(Optional.of(product));
 
-        ResponseEntity<BankProduct> response = controller.getProductById(1L);
+        Mockito.when(service.getProductById(1L)).thenReturn(Optional.of(product));
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(product, response.getBody());
-    }
-
-    @Test
-    void testGetProductByIdNotFound() {
-        when(service.getProductById(1L)).thenReturn(Optional.empty());
-
-        ResponseEntity<BankProduct> response = controller.getProductById(1L);
-
-        assertEquals(404, response.getStatusCodeValue());
-        assertNull(response.getBody());
+        mockMvc.perform(get("/bankproducts/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("Savings Account"));
     }
 
     // ----------------------------
-    // READ ALL
+    // READ: GET /bankproducts/{id} (not found)
     // ----------------------------
     @Test
-    void testGetAllProducts() {
-        BankProduct p1 = new BankProduct("A");
+    void testGetProductByIdNotFound() throws Exception {
+        Mockito.when(service.getProductById(99L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/bankproducts/99"))
+                .andExpect(status().isNotFound());
+    }
+
+    // ----------------------------
+    // READ: GET /bankproducts (all products)
+    // ----------------------------
+    @Test
+    void testGetAllProducts() throws Exception {
+        BankProduct p1 = new BankProduct("Savings Account");
         p1.setId(1L);
-        BankProduct p2 = new BankProduct("B");
+        BankProduct p2 = new BankProduct("Fixed Deposit");
         p2.setId(2L);
 
-        List<BankProduct> products = Arrays.asList(p1, p2);
-        when(service.getAllProducts()).thenReturn(products);
+        Mockito.when(service.getAllProducts()).thenReturn(List.of(p1, p2));
 
-        ResponseEntity<List<BankProduct>> response = controller.getAllProducts();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().size());
-        assertEquals(products, response.getBody());
+        mockMvc.perform(get("/bankproducts"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].title").value("Savings Account"))
+                .andExpect(jsonPath("$[1].title").value("Fixed Deposit"));
     }
 
     // ----------------------------
-    // UPDATE
+    // UPDATE: PUT /bankproducts/{id} (found)
     // ----------------------------
     @Test
-    void testUpdateProductFound() {
-        BankProduct updated = new BankProduct("Updated");
+    void testUpdateProductFound() throws Exception {
+        BankProduct updated = new BankProduct("New Title");
         updated.setId(1L);
 
-        when(service.updateProduct(eq(1L), any(BankProduct.class))).thenReturn(Optional.of(updated));
+        Mockito.when(service.updateProduct(eq(1L), any(BankProduct.class)))
+                .thenReturn(Optional.of(updated));
 
-        ResponseEntity<BankProduct> response = controller.updateProduct(1L, updated);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(updated, response.getBody());
-        verify(service).updateProduct(1L, updated);
-    }
-
-    @Test
-    void testUpdateProductNotFound() {
-        BankProduct updated = new BankProduct("Updated");
-
-        when(service.updateProduct(eq(1L), any(BankProduct.class))).thenReturn(Optional.empty());
-
-        ResponseEntity<BankProduct> response = controller.updateProduct(1L, updated);
-
-        assertEquals(404, response.getStatusCodeValue());
-        assertNull(response.getBody());
+        mockMvc.perform(put("/bankproducts/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updated)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("New Title"));
     }
 
     // ----------------------------
-    // DELETE
+    // UPDATE: PUT /bankproducts/{id} (not found)
     // ----------------------------
     @Test
-    void testDeleteProductFound() {
-        when(service.deleteProduct(1L)).thenReturn(true);
+    void testUpdateProductNotFound() throws Exception {
+        BankProduct updated = new BankProduct("New Title");
+        updated.setId(99L);
 
-        ResponseEntity<Void> response = controller.deleteProduct(1L);
+        Mockito.when(service.updateProduct(eq(99L), any(BankProduct.class)))
+                .thenReturn(Optional.empty());
 
-        assertEquals(204, response.getStatusCodeValue());
-        verify(service).deleteProduct(1L);
+        mockMvc.perform(put("/bankproducts/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updated)))
+                .andExpect(status().isNotFound());
     }
 
+    // ----------------------------
+    // DELETE: DELETE /bankproducts/{id} (found)
+    // ----------------------------
     @Test
-    void testDeleteProductNotFound() {
-        when(service.deleteProduct(1L)).thenReturn(false);
+    void testDeleteProductFound() throws Exception {
+        Mockito.when(service.deleteProduct(1L)).thenReturn(true);
 
-        ResponseEntity<Void> response = controller.deleteProduct(1L);
+        mockMvc.perform(delete("/bankproducts/1"))
+                .andExpect(status().isNoContent());
+    }
 
-        assertEquals(404, response.getStatusCodeValue());
-        verify(service).deleteProduct(1L);
+    // ----------------------------
+    // DELETE: DELETE /bankproducts/{id} (not found)
+    // ----------------------------
+    @Test
+    void testDeleteProductNotFound() throws Exception {
+        Mockito.when(service.deleteProduct(99L)).thenReturn(false);
+
+        mockMvc.perform(delete("/bankproducts/99"))
+                .andExpect(status().isNotFound());
     }
 }
-
