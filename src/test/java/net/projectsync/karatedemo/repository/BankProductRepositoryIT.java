@@ -10,7 +10,6 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -38,11 +37,10 @@ class BankProductRepositoryIT {
     @Autowired
     private BankProductRepository repository;
 
-    // ----------------------------
     // CREATE & FIND by ID
-    // ----------------------------
     @Test
     void testSaveAndFindById() {
+
         BankProduct product = new BankProduct("Savings Account");
         BankProduct saved = repository.save(product);
 
@@ -51,11 +49,10 @@ class BankProductRepositoryIT {
         Assertions.assertThat(found.get().getTitle()).isEqualTo("Savings Account");
     }
 
-    // ----------------------------
     // FIND all
-    // ----------------------------
     @Test
     void testFindAll() {
+
         repository.save(new BankProduct("Product 1"));
         repository.save(new BankProduct("Product 2"));
 
@@ -65,11 +62,10 @@ class BankProductRepositoryIT {
                 .hasSizeGreaterThanOrEqualTo(2);
     }
 
-    // ----------------------------
     // UPDATE
-    // ----------------------------
     @Test
     void testUpdate() {
+
         BankProduct product = repository.save(new BankProduct("Old Title"));
 
         // Update title
@@ -81,11 +77,10 @@ class BankProductRepositoryIT {
         Assertions.assertThat(found.get().getTitle()).isEqualTo("New Title");
     }
 
-    // ----------------------------
     // DELETE by ID
-    // ----------------------------
     @Test
     void testDeleteById() {
+
         BankProduct product = repository.save(new BankProduct("To Be Deleted"));
         Long id = product.getId();
 
@@ -93,11 +88,10 @@ class BankProductRepositoryIT {
         Assertions.assertThat(repository.findById(id)).isEmpty();
     }
 
-    // ----------------------------
     // DELETE all
-    // ----------------------------
     @Test
     void testDeleteAll() {
+
         repository.save(new BankProduct("Product A"));
         repository.save(new BankProduct("Product B"));
 
@@ -107,11 +101,10 @@ class BankProductRepositoryIT {
         Assertions.assertThat(remaining).isEmpty();
     }
 
-    // ----------------------------
     // FIND by non-existing ID
-    // ----------------------------
     @Test
     void testFindByNonExistingId() {
+
         Optional<BankProduct> found = repository.findById(999L);
         Assertions.assertThat(found).isEmpty();
     }

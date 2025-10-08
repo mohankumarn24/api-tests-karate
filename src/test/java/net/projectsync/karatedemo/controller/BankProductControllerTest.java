@@ -10,10 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.util.List;
 import java.util.Optional;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -31,11 +29,10 @@ class BankProductControllerTest {
     @MockBean
     private BankProductService service;
 
-    // ----------------------------
     // CREATE: POST /bankproducts
-    // ----------------------------
     @Test
     void testCreateProduct() throws Exception {
+
         BankProduct request = new BankProduct("Savings Account");
         BankProduct saved = new BankProduct("Savings Account");
         saved.setId(1L);
@@ -51,11 +48,10 @@ class BankProductControllerTest {
                 .andExpect(jsonPath("$.title").value("Savings Account"));
     }
 
-    // ----------------------------
     // READ: GET /bankproducts/{id} (found)
-    // ----------------------------
     @Test
     void testGetProductByIdFound() throws Exception {
+
         BankProduct product = new BankProduct("Savings Account");
         product.setId(1L);
 
@@ -67,22 +63,20 @@ class BankProductControllerTest {
                 .andExpect(jsonPath("$.title").value("Savings Account"));
     }
 
-    // ----------------------------
     // READ: GET /bankproducts/{id} (not found)
-    // ----------------------------
     @Test
     void testGetProductByIdNotFound() throws Exception {
+
         Mockito.when(service.getProductById(99L)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/bankproducts/99"))
                 .andExpect(status().isNotFound());
     }
 
-    // ----------------------------
     // READ: GET /bankproducts (all products)
-    // ----------------------------
     @Test
     void testGetAllProducts() throws Exception {
+
         BankProduct p1 = new BankProduct("Savings Account");
         p1.setId(1L);
         BankProduct p2 = new BankProduct("Fixed Deposit");
@@ -97,11 +91,10 @@ class BankProductControllerTest {
                 .andExpect(jsonPath("$[1].title").value("Fixed Deposit"));
     }
 
-    // ----------------------------
     // UPDATE: PUT /bankproducts/{id} (found)
-    // ----------------------------
     @Test
     void testUpdateProductFound() throws Exception {
+
         BankProduct updated = new BankProduct("New Title");
         updated.setId(1L);
 
@@ -116,11 +109,10 @@ class BankProductControllerTest {
                 .andExpect(jsonPath("$.title").value("New Title"));
     }
 
-    // ----------------------------
     // UPDATE: PUT /bankproducts/{id} (not found)
-    // ----------------------------
     @Test
     void testUpdateProductNotFound() throws Exception {
+
         BankProduct updated = new BankProduct("New Title");
         updated.setId(99L);
 
@@ -133,22 +125,20 @@ class BankProductControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    // ----------------------------
     // DELETE: DELETE /bankproducts/{id} (found)
-    // ----------------------------
     @Test
     void testDeleteProductFound() throws Exception {
+
         Mockito.when(service.deleteProduct(1L)).thenReturn(true);
 
         mockMvc.perform(delete("/bankproducts/1"))
                 .andExpect(status().isNoContent());
     }
 
-    // ----------------------------
     // DELETE: DELETE /bankproducts/{id} (not found)
-    // ----------------------------
     @Test
     void testDeleteProductNotFound() throws Exception {
+
         Mockito.when(service.deleteProduct(99L)).thenReturn(false);
 
         mockMvc.perform(delete("/bankproducts/99"))

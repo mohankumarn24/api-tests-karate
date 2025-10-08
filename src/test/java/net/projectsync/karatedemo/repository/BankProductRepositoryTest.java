@@ -1,6 +1,7 @@
 package net.projectsync.karatedemo.repository;
 
 import net.projectsync.karatedemo.model.BankProduct;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +33,7 @@ class BankProductRepositoryTest {
 
     @BeforeEach
     void setUp() {
+
         // Clear the database before each test
         bankProductRepository.deleteAll();
         entityManager.clear();
@@ -44,18 +46,20 @@ class BankProductRepositoryTest {
     @Test
     @DisplayName("Should save bank product successfully")
     void testSaveBankProduct() {
+
         // When
         BankProduct savedProduct = bankProductRepository.save(testProduct1);
 
         // Then
-        assertThat(savedProduct).isNotNull();
-        assertThat(savedProduct.getId()).isNotNull();
-        assertThat(savedProduct.getTitle()).isEqualTo("Savings Account");
+        Assertions.assertThat(savedProduct).isNotNull();
+        Assertions.assertThat(savedProduct.getId()).isNotNull();
+        Assertions.assertThat(savedProduct.getTitle()).isEqualTo("Savings Account");
     }
 
     @Test
     @DisplayName("Should find bank product by ID")
     void testFindById() {
+
         // Given
         BankProduct savedProduct = entityManager.persistAndFlush(testProduct1);
         entityManager.clear();
@@ -64,24 +68,26 @@ class BankProductRepositoryTest {
         Optional<BankProduct> foundProduct = bankProductRepository.findById(savedProduct.getId());
 
         // Then
-        assertThat(foundProduct).isPresent();
-        assertThat(foundProduct.get().getId()).isEqualTo(savedProduct.getId());
-        assertThat(foundProduct.get().getTitle()).isEqualTo("Savings Account");
+        Assertions.assertThat(foundProduct).isPresent();
+        Assertions.assertThat(foundProduct.get().getId()).isEqualTo(savedProduct.getId());
+        Assertions.assertThat(foundProduct.get().getTitle()).isEqualTo("Savings Account");
     }
 
     @Test
     @DisplayName("Should return empty when bank product not found by ID")
     void testFindByIdNotFound() {
+
         // When
         Optional<BankProduct> foundProduct = bankProductRepository.findById(999L);
 
         // Then
-        assertThat(foundProduct).isEmpty();
+        Assertions.assertThat(foundProduct).isEmpty();
     }
 
     @Test
     @DisplayName("Should find all bank products")
     void testFindAll() {
+
         // Given
         entityManager.persist(testProduct1);
         entityManager.persist(testProduct2);
@@ -91,24 +97,26 @@ class BankProductRepositoryTest {
         List<BankProduct> products = bankProductRepository.findAll();
 
         // Then
-        assertThat(products).hasSize(2);
-        assertThat(products).extracting(BankProduct::getTitle)
+        Assertions.assertThat(products).hasSize(2);
+        Assertions.assertThat(products).extracting(BankProduct::getTitle)
                 .containsExactlyInAnyOrder("Savings Account", "Credit Card");
     }
 
     @Test
     @DisplayName("Should return empty list when no bank products exist")
     void testFindAllEmpty() {
+
         // When
         List<BankProduct> products = bankProductRepository.findAll();
 
         // Then
-        assertThat(products).isEmpty();
+        Assertions.assertThat(products).isEmpty();
     }
 
     @Test
     @DisplayName("Should update bank product successfully")
     void testUpdateBankProduct() {
+
         // Given
         BankProduct savedProduct = entityManager.persistAndFlush(testProduct1);
         entityManager.clear();
@@ -118,13 +126,14 @@ class BankProductRepositoryTest {
         BankProduct updatedProduct = bankProductRepository.save(savedProduct);
 
         // Then
-        assertThat(updatedProduct.getId()).isEqualTo(savedProduct.getId());
-        assertThat(updatedProduct.getTitle()).isEqualTo("Updated Savings Account");
+        Assertions.assertThat(updatedProduct.getId()).isEqualTo(savedProduct.getId());
+        Assertions.assertThat(updatedProduct.getTitle()).isEqualTo("Updated Savings Account");
     }
 
     @Test
     @DisplayName("Should delete bank product by ID")
     void testDeleteById() {
+
         // Given
         BankProduct savedProduct = entityManager.persistAndFlush(testProduct1);
         Long productId = savedProduct.getId();
@@ -135,12 +144,13 @@ class BankProductRepositoryTest {
 
         // Then
         Optional<BankProduct> deletedProduct = bankProductRepository.findById(productId);
-        assertThat(deletedProduct).isEmpty();
+        Assertions.assertThat(deletedProduct).isEmpty();
     }
 
     @Test
     @DisplayName("Should delete bank product entity")
     void testDelete() {
+
         // Given
         BankProduct savedProduct = entityManager.persistAndFlush(testProduct1);
         Long productId = savedProduct.getId();
@@ -151,12 +161,13 @@ class BankProductRepositoryTest {
 
         // Then
         Optional<BankProduct> deletedProduct = bankProductRepository.findById(productId);
-        assertThat(deletedProduct).isEmpty();
+        Assertions.assertThat(deletedProduct).isEmpty();
     }
 
     @Test
     @DisplayName("Should delete all bank products")
     void testDeleteAll() {
+
         // Given
         entityManager.persist(testProduct1);
         entityManager.persist(testProduct2);
@@ -167,12 +178,13 @@ class BankProductRepositoryTest {
 
         // Then
         List<BankProduct> products = bankProductRepository.findAll();
-        assertThat(products).isEmpty();
+        Assertions.assertThat(products).isEmpty();
     }
 
     @Test
     @DisplayName("Should check if bank product exists by ID")
     void testExistsById() {
+
         // Given
         BankProduct savedProduct = entityManager.persistAndFlush(testProduct1);
 
@@ -181,13 +193,14 @@ class BankProductRepositoryTest {
         boolean notExists = bankProductRepository.existsById(999L);
 
         // Then
-        assertThat(exists).isTrue();
-        assertThat(notExists).isFalse();
+        Assertions.assertThat(exists).isTrue();
+        Assertions.assertThat(notExists).isFalse();
     }
 
     @Test
     @DisplayName("Should count bank products")
     void testCount() {
+
         // Given
         entityManager.persist(testProduct1);
         entityManager.persist(testProduct2);
@@ -197,12 +210,13 @@ class BankProductRepositoryTest {
         long count = bankProductRepository.count();
 
         // Then
-        assertThat(count).isEqualTo(2);
+        Assertions.assertThat(count).isEqualTo(2);
     }
 
     @Test
     @DisplayName("Should save and flush bank product")
     void testSaveAndFlush() {
+
         // When
         BankProduct savedProduct = bankProductRepository.saveAndFlush(testProduct1);
 
@@ -212,13 +226,14 @@ class BankProductRepositoryTest {
 
         // Verify it's immediately available in database
         BankProduct foundProduct = entityManager.find(BankProduct.class, savedProduct.getId());
-        assertThat(foundProduct).isNotNull();
-        assertThat(foundProduct.getTitle()).isEqualTo("Savings Account");
+        Assertions.assertThat(foundProduct).isNotNull();
+        Assertions.assertThat(foundProduct.getTitle()).isEqualTo("Savings Account");
     }
 
     @Test
     @DisplayName("Should handle null title")
     void testSaveWithNullTitle() {
+
         // Given
         BankProduct productWithNullTitle = new BankProduct();
         productWithNullTitle.setTitle(null);
@@ -228,13 +243,14 @@ class BankProductRepositoryTest {
 
         // Then
         assertThat(savedProduct).isNotNull();
-        assertThat(savedProduct.getId()).isNotNull();
-        assertThat(savedProduct.getTitle()).isNull();
+        Assertions.assertThat(savedProduct.getId()).isNotNull();
+        Assertions.assertThat(savedProduct.getTitle()).isNull();
     }
 
     @Test
     @DisplayName("Should save multiple bank products")
     void testSaveAll() {
+
         // Given
         List<BankProduct> products = List.of(testProduct1, testProduct2);
 
@@ -242,9 +258,9 @@ class BankProductRepositoryTest {
         List<BankProduct> savedProducts = bankProductRepository.saveAll(products);
 
         // Then
-        assertThat(savedProducts).hasSize(2);
-        assertThat(savedProducts).allMatch(p -> p.getId() != null);
-        assertThat(savedProducts).extracting(BankProduct::getTitle)
-                .containsExactlyInAnyOrder("Savings Account", "Credit Card");
+        Assertions.assertThat(savedProducts).hasSize(2);
+        Assertions.assertThat(savedProducts).allMatch(p -> p.getId() != null);
+        Assertions.assertThat(savedProducts).extracting(BankProduct::getTitle)
+                        .containsExactlyInAnyOrder("Savings Account", "Credit Card");
     }
 }

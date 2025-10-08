@@ -14,11 +14,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BankProductController {
 
-    private final BankProductService bankProductService; // Constructor injection via Lombok
+    private final BankProductService bankProductService;
 
-    // ----------------------------
     // CREATE
-    // ----------------------------
     @PostMapping
     public ResponseEntity<BankProduct> createProduct(@Valid @RequestBody BankProduct product) {
         BankProduct created = bankProductService.createProduct(product);
@@ -27,9 +25,7 @@ public class BankProductController {
                 .body(created);
     }
 
-    // ----------------------------
     // READ (by ID)
-    // ----------------------------
     @GetMapping("/{id}")
     public ResponseEntity<BankProduct> getProductById(@PathVariable Long id) {
         return bankProductService.getProductById(id)
@@ -37,18 +33,14 @@ public class BankProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ----------------------------
     // READ (all products)
-    // ----------------------------
     @GetMapping
     public ResponseEntity<List<BankProduct>> getAllProducts() {
         List<BankProduct> products = bankProductService.getAllProducts();
         return ResponseEntity.ok(products);
     }
 
-    // ----------------------------
     // UPDATE
-    // ----------------------------
     @PutMapping("/{id}")
     public ResponseEntity<BankProduct> updateProduct(@PathVariable Long id,
                                                      @Valid @RequestBody BankProduct product) {
@@ -57,9 +49,7 @@ public class BankProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ----------------------------
     // DELETE (by ID)
-    // ----------------------------
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         boolean deleted = bankProductService.deleteProduct(id);

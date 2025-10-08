@@ -29,6 +29,7 @@ Feature: CRUD tests for bankproducts API
     * def productId = response.id
 
     # Now read it
+    # This is equivalent to bankproducts/{productId}. Karate automatically joins the path segments with /
     Given path 'bankproducts', productId
     When method GET
     Then status 200

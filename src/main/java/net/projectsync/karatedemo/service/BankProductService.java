@@ -39,13 +39,12 @@ public class BankProductService {
 
     // DELETE (by ID)
     public boolean deleteProduct(Long id) {
-        Optional<BankProduct> productOpt = repository.findById(id);
-        if (productOpt.isPresent()) {
+        Optional<BankProduct> productOptional = repository.findById(id);
+        if (productOptional.isPresent()) {
             repository.deleteById(id);
             return true;
         } else {
             return false;
         }
     }
-
 }

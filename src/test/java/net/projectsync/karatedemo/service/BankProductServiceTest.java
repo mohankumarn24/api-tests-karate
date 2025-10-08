@@ -22,11 +22,10 @@ class BankProductServiceTest {
     @InjectMocks
     private BankProductService service;
 
-    // ----------------------------
     // CREATE
-    // ----------------------------
     @Test
     void testCreateProduct() {
+
         BankProduct product = new BankProduct("New Product");
         BankProduct saved = new BankProduct("New Product");
         saved.setId(1L);
@@ -39,11 +38,10 @@ class BankProductServiceTest {
         verify(repository).save(product);
     }
 
-    // ----------------------------
     // READ BY ID
-    // ----------------------------
     @Test
     void testGetProductByIdFound() {
+
         BankProduct product = new BankProduct("Test");
         product.setId(1L);
 
@@ -55,8 +53,10 @@ class BankProductServiceTest {
         assertEquals(product, result.get());
     }
 
+    // READ BY ID (not found)
     @Test
     void testGetProductByIdNotFound() {
+
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
         Optional<BankProduct> result = service.getProductById(1L);
@@ -64,11 +64,10 @@ class BankProductServiceTest {
         assertFalse(result.isPresent());
     }
 
-    // ----------------------------
     // READ ALL
-    // ----------------------------
     @Test
     void testGetAllProducts() {
+
         BankProduct p1 = new BankProduct("A");
         p1.setId(1L);
         BankProduct p2 = new BankProduct("B");
@@ -82,11 +81,10 @@ class BankProductServiceTest {
         assertEquals(Arrays.asList(p1, p2), result);
     }
 
-    // ----------------------------
     // UPDATE
-    // ----------------------------
     @Test
     void testUpdateProductFound() {
+
         BankProduct existing = new BankProduct("Old");
         existing.setId(1L);
         BankProduct updated = new BankProduct("New");
@@ -102,8 +100,10 @@ class BankProductServiceTest {
         verify(repository).save(existing);
     }
 
+    // UPDATE (not found)
     @Test
     void testUpdateProductNotFound() {
+
         BankProduct updated = new BankProduct("New");
 
         when(repository.findById(1L)).thenReturn(Optional.empty());
@@ -115,11 +115,10 @@ class BankProductServiceTest {
         verify(repository, never()).save(any());
     }
 
-    // ----------------------------
     // DELETE
-    // ----------------------------
     @Test
     void testDeleteProductFound() {
+
         BankProduct product = new BankProduct("ToDelete");
         product.setId(1L);
 
@@ -133,8 +132,10 @@ class BankProductServiceTest {
         verify(repository).deleteById(1L);
     }
 
+    // DELETE (not found)
     @Test
     void testDeleteProductNotFound() {
+
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
         boolean deleted = service.deleteProduct(1L);

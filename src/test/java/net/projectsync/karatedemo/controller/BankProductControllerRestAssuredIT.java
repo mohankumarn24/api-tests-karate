@@ -12,7 +12,6 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -44,14 +43,13 @@ class BankProductControllerRestAssuredIT {
         RestAssured.port = port;
     }
 
-    // ----------------------------
     // CREATE
-    // ----------------------------
     @Test
     void testCreateProduct() {
+
         BankProduct product = new BankProduct("Recurring Deposit");
 
-        given()
+        RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(product)
                 .when()
@@ -62,25 +60,24 @@ class BankProductControllerRestAssuredIT {
                 .body("title", equalTo("Recurring Deposit"));
     }
 
-    // ----------------------------
     // READ by ID
-    // ----------------------------
     @Test
     void testGetProductById() {
+
         // First create a product - extract as Long
-        Long id = given()
-                .contentType(ContentType.JSON)
-                .body(new BankProduct("Savings Account"))
-                .when()
-                .post("/bankproducts")
-                .then()
-                .statusCode(201)
-                .extract()
-                .jsonPath()
-                .getLong("id");
+        Long id = RestAssured.given()
+                        .contentType(ContentType.JSON)
+                        .body(new BankProduct("Savings Account"))
+                        .when()
+                        .post("/bankproducts")
+                        .then()
+                        .statusCode(201)
+                        .extract()
+                        .jsonPath()
+                        .getLong("id");
 
         // GET by ID
-        given()
+        RestAssured.given()
                 .when()
                 .get("/bankproducts/{id}", id)
                 .then()
@@ -89,17 +86,22 @@ class BankProductControllerRestAssuredIT {
                 .body("title", equalTo("Savings Account"));
     }
 
-    // ----------------------------
     // READ all products
-    // ----------------------------
     @Test
     void testGetAllProducts() {
+
         // Create multiple products
-        given().contentType(ContentType.JSON).body(new BankProduct("Product 1")).post("/bankproducts");
-        given().contentType(ContentType.JSON).body(new BankProduct("Product 2")).post("/bankproducts");
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(new BankProduct("Product 1"))
+                .post("/bankproducts");
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(new BankProduct("Product 2"))
+                .post("/bankproducts");
 
         // GET all
-        given()
+        RestAssured.given()
                 .when()
                 .get("/bankproducts")
                 .then()
@@ -108,28 +110,27 @@ class BankProductControllerRestAssuredIT {
                 .body("title", hasItems("Product 1", "Product 2"));
     }
 
-    // ----------------------------
     // UPDATE
-    // ----------------------------
     @Test
     void testUpdateProduct() {
+
         // Create a product first - extract as Long
-        Long id = given()
-                .contentType(ContentType.JSON)
-                .body(new BankProduct("Old Title"))
-                .when()
-                .post("/bankproducts")
-                .then()
-                .statusCode(201)
-                .extract()
-                .jsonPath()
-                .getLong("id");
+        Long id = RestAssured.given()
+                        .contentType(ContentType.JSON)
+                        .body(new BankProduct("Old Title"))
+                        .when()
+                        .post("/bankproducts")
+                        .then()
+                        .statusCode(201)
+                        .extract()
+                        .jsonPath()
+                        .getLong("id");
 
         // Prepare update
         BankProduct updated = new BankProduct("New Title");
 
         // PUT request
-        given()
+        RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(updated)
                 .when()
@@ -140,44 +141,42 @@ class BankProductControllerRestAssuredIT {
                 .body("title", equalTo("New Title"));
     }
 
-    // ----------------------------
     // DELETE
-    // ----------------------------
     @Test
     void testDeleteProduct() {
+
         // Create a product first - extract as Long
-        Long id = given()
-                .contentType(ContentType.JSON)
-                .body(new BankProduct("To Be Deleted"))
-                .when()
-                .post("/bankproducts")
-                .then()
-                .statusCode(201)
-                .extract()
-                .jsonPath()
-                .getLong("id");
+        Long id = RestAssured.given()
+                        .contentType(ContentType.JSON)
+                        .body(new BankProduct("To Be Deleted"))
+                        .when()
+                        .post("/bankproducts")
+                        .then()
+                        .statusCode(201)
+                        .extract()
+                        .jsonPath()
+                        .getLong("id");
 
         // DELETE
-        given()
+        RestAssured.given()
                 .when()
                 .delete("/bankproducts/{id}", id)
                 .then()
                 .statusCode(204);
 
         // Confirm deletion
-        given()
+        RestAssured.given()
                 .when()
                 .get("/bankproducts/{id}", id)
                 .then()
                 .statusCode(404);
     }
 
-    // ----------------------------
     // Additional Test Cases
-    // ----------------------------
     @Test
     void testGetProductByIdNotFound() {
-        given()
+
+        RestAssured.given()
                 .when()
                 .get("/bankproducts/{id}", 99999)
                 .then()
@@ -186,9 +185,10 @@ class BankProductControllerRestAssuredIT {
 
     @Test
     void testUpdateProductNotFound() {
+
         BankProduct updated = new BankProduct("Non-existent Product");
 
-        given()
+        RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(updated)
                 .when()
@@ -199,7 +199,8 @@ class BankProductControllerRestAssuredIT {
 
     @Test
     void testDeleteProductNotFound() {
-        given()
+
+        RestAssured.given()
                 .when()
                 .delete("/bankproducts/{id}", 99999)
                 .then()
@@ -208,10 +209,11 @@ class BankProductControllerRestAssuredIT {
 
     @Test
     void testCreateProductWithNullTitle() {
+
         BankProduct product = new BankProduct();
         product.setTitle(null);
 
-        given()
+        RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(product)
                 .when()
@@ -224,9 +226,10 @@ class BankProductControllerRestAssuredIT {
 
     @Test
     void testCreateProductWithEmptyTitle() {
+
         BankProduct product = new BankProduct("");
 
-        given()
+        RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(product)
                 .when()
@@ -239,10 +242,10 @@ class BankProductControllerRestAssuredIT {
 }
 
 /*
-.getString("title")      // Extract String
-.getInt("id")           // Extract Integer
-.getLong("id")          // Extract Long
-.getBoolean("active")   // Extract Boolean
-.getList("items")       // Extract List
-.getObject("data", BankProduct.class)  // Extract custom object
+ * .getString("title")                      // Extract String
+ * .getInt("id")                            // Extract Integer
+ * .getLong("id")                           // Extract Long
+ * .getBoolean("active")                    // Extract Boolean
+ * .getList("items")                        // Extract List
+ * .getObject("data", BankProduct.class)    // Extract custom object
  */
