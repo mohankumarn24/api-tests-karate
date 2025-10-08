@@ -24,41 +24,51 @@ configurations {
     }
 }
 
+// --------------------
+// Repositories
+// --------------------
 repositories {
     // Use Maven Central for downloading dependencies
     mavenCentral()
 }
 
+// --------------------
+// Dependencies
+// --------------------
 dependencies {
-    // --------------------
-    // Spring Boot Dependencies
-    // --------------------
-    implementation 'org.springframework.boot:spring-boot-starter-web'         // Web (REST) support
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'    // Spring Data JPA for DB access
-    implementation 'org.springframework.boot:spring-boot-starter-validation'  // Bean validation (JSR-303)
-    runtimeOnly 'org.postgresql:postgresql'                                   // PostgreSQL driver
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    runtimeOnly 'org.postgresql:postgresql'
 
-    // --------------------
     // Lombok
-    // --------------------
-    compileOnly 'org.projectlombok:lombok'            // Only needed at compile time
-    annotationProcessor 'org.projectlombok:lombok'    // Enables Lombok annotation processing
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-    // --------------------
-    // Testing Dependencies
-    // --------------------
-    testImplementation 'org.springframework.boot:spring-boot-starter-test' // JUnit, MockMvc, AssertJ, Mockito
-    testImplementation 'com.h2database:h2'                                 // H2 in-memory DB for tests
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'com.h2database:h2'
 
-    // Karate API testing
+    // Karate for API testing
     testImplementation 'com.intuit.karate:karate-junit5:1.2.0'
 
-    // Lombok for test code
+    // RestAssured for API testing (compatible version)
+    testImplementation 'io.rest-assured:rest-assured:4.5.1'
+
+    // Testcontainers
+    testImplementation 'org.testcontainers:testcontainers:1.19.3'
+    testImplementation 'org.testcontainers:postgresql:1.19.3'
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
+
+    // Lombok for tests
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
+// --------------------
 // Include .feature files (Karate) as test resources
+// --------------------
 sourceSets {
     test {
         resources {
@@ -115,4 +125,15 @@ jacocoTestCoverageVerification {
 // Ensure JaCoCo report is generated after running tests
 tasks.named('test') {
     finalizedBy jacocoTestReport
+}
+
+// --------------------
+// Optional: Force Groovy resolution to avoid conflicts (if needed)
+// --------------------
+configurations.all {
+    resolutionStrategy {
+        // Uncomment if you get Groovy conflicts again
+        // force 'org.codehaus.groovy:groovy:3.0.13'
+        // force 'org.codehaus.groovy:groovy-xml:3.0.13'
+    }
 }
