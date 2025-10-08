@@ -1,5 +1,7 @@
 Feature: CRUD tests for bankproducts API
 
+  # Spring Boot application must be running before executing API tests (http://localhost:8080)
+  # API tests updates values in DB used by the application
   Background:
     * url baseUrl
     * header Accept = 'application/json'
