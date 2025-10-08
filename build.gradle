@@ -1,68 +1,118 @@
 plugins {
+    // Spring Boot plugin to manage application lifecycle, packaging, and dependencies
     id 'org.springframework.boot' version '2.7.5'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+
+    // Spring dependency management plugin (ensures consistent dependency versions)
+    id 'io.spring.dependency-management' version '1.1.4'
+
+    // Java plugin for compiling Java code
     id 'java'
-    id 'jacoco' // <-- enable JaCoCo for code coverage
+
+    // JaCoCo plugin to enable code coverage reports
+    id 'jacoco'
 }
 
-group = 'net.projectsync'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+group = 'net.projectsync'   // Maven/Gradle group ID
+version = '0.0.1-SNAPSHOT' // Project version
+sourceCompatibility = '11'  // Java version for compiling source code
+targetCompatibility = '11'  // Java version for bytecode
+
+// Ensure compileOnly dependencies include annotation processors (for Lombok)
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
 
 repositories {
+    // Use Maven Central for downloading dependencies
     mavenCentral()
 }
 
 dependencies {
-    // Spring Boot
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    runtimeOnly 'org.postgresql:postgresql'
+    // --------------------
+    // Spring Boot Dependencies
+    // --------------------
+    implementation 'org.springframework.boot:spring-boot-starter-web'         // Web (REST) support
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'    // Spring Data JPA for DB access
+    implementation 'org.springframework.boot:spring-boot-starter-validation'  // Bean validation (JSR-303)
+    runtimeOnly 'org.postgresql:postgresql'                                   // PostgreSQL driver
 
+    // --------------------
     // Lombok
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    // --------------------
+    compileOnly 'org.projectlombok:lombok'            // Only needed at compile time
+    annotationProcessor 'org.projectlombok:lombok'    // Enables Lombok annotation processing
 
-    // Spring Boot testing
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // --------------------
+    // Testing Dependencies
+    // --------------------
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // JUnit, MockMvc, AssertJ, Mockito
+    testImplementation 'com.h2database:h2'                                 // H2 in-memory DB for tests
 
-    // Mockito for unit tests
-    testImplementation 'org.mockito:mockito-core:4.11.0'
-    testImplementation 'org.mockito:mockito-junit-jupiter:4.11.0'
-
-    // Karate for API testing
+    // Karate API testing
     testImplementation 'com.intuit.karate:karate-junit5:1.2.0'
-    testImplementation 'com.intuit.karate:karate-core:1.2.0'
+
+    // Lombok for test code
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
-// Include .feature files as resources
+// Include .feature files (Karate) as test resources
 sourceSets {
     test {
         resources {
-            srcDir file('src/test/java')
-            exclude '**/*.java'
+            srcDir file('src/test/java') // Include test resources
+            exclude '**/*.java'          // Exclude Java files from resources
         }
     }
 }
 
-// Configure test task
+// --------------------
+// Test task configuration
+// --------------------
 test {
-    useJUnitPlatform()
-    // Fix reflective access issues on Java 11+
+    useJUnitPlatform() // Use JUnit 5
+
+    // Fix reflective access issues on Java 11+ (for Mockito, Lombok, etc.)
     jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
-            '--add-opens', 'java.base/java.nio=ALL-UNNAMED'
-}
+            '--add-opens', 'java.base/java.nio=ALL-UNNAMED',
+            '--add-opens', 'java.base/java.util=ALL-UNNAMED'
 
-// JaCoCo configuration
-jacoco {
-    toolVersion = "0.8.10"
-}
-
-jacocoTestReport {
-    dependsOn test // tests are required before generating report
-    reports {
-        xml.required = true
-        html.required = true
+    testLogging {
+        events "passed", "skipped", "failed"     // Show events for all test outcomes
+        exceptionFormat "full"                   // Print full stack trace for failures
     }
+}
+
+// --------------------
+// JaCoCo Code Coverage
+// --------------------
+jacoco {
+    toolVersion = "0.8.10" // JaCoCo version
+}
+
+// Generate test reports after running tests
+jacocoTestReport {
+    dependsOn test   // Ensure tests run before generating report
+    reports {
+        xml.required = true   // Generate XML report (useful for CI tools)
+        html.required = true  // Generate human-readable HTML report
+    }
+}
+
+// Optional: enforce code coverage verification (can fail build if limits not met)
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.0 // Minimum coverage threshold (0.0 = no enforcement, can set higher)
+            }
+        }
+    }
+}
+
+// Ensure JaCoCo report is generated after running tests
+tasks.named('test') {
+    finalizedBy jacocoTestReport
 }
