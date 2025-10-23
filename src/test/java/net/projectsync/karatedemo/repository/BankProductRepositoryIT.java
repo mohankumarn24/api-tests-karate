@@ -17,6 +17,9 @@ import java.util.Optional;
 @Testcontainers
 class BankProductRepositoryIT {
 
+    @Autowired
+    private BankProductRepository repository;
+
     @Container
     static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:15.3")
             .withDatabaseName("karate_test")
@@ -33,9 +36,6 @@ class BankProductRepositoryIT {
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
         registry.add("spring.jpa.show-sql", () -> "true");
     }
-
-    @Autowired
-    private BankProductRepository repository;
 
     // CREATE & FIND by ID
     @Test
