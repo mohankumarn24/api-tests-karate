@@ -65,9 +65,10 @@ class BankProductControllerRestTemplateIT {
 
         BankProduct bankProduct = new BankProduct("Fixed Deposit");
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<BankProduct> request = new HttpEntity<>(bankProduct, headers);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Content-Type", "application/json");
+        httpHeaders.add("Accept", "application/json");
+        HttpEntity<BankProduct> request = new HttpEntity<>(bankProduct, httpHeaders);
 
         ResponseEntity<BankProduct> response = restTemplate.postForEntity(baseUrl(), request, BankProduct.class);
 
@@ -140,9 +141,9 @@ class BankProductControllerRestTemplateIT {
 
         // Prepare update
         bankProduct.setTitle("New Title");
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<BankProduct> request = new HttpEntity<>(bankProduct, headers);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<BankProduct> request = new HttpEntity<>(bankProduct, httpHeaders);
 
         ResponseEntity<BankProduct> response = restTemplate.exchange(baseUrl() + "/" + bankProduct.getId(), HttpMethod.PUT, request, BankProduct.class);
 
