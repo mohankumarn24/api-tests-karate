@@ -41,6 +41,25 @@ Feature: CRUD tests for bankproducts API
     And match response.title == 'My product'
 
   # ----------------------------
+  # READ (GET by invalid ID)
+  # ----------------------------
+  Scenario: Get a bank product by invalid ID
+    * def sampleProduct = { "title": "My product" }
+    * params { title: 'My product', type: 'Savings' }
+    # Create product for this scenario
+    Given path 'bankproducts'
+    And request sampleProduct
+    When method POST
+    Then status 201
+    * def productId = response.id
+
+    # Now read it
+    # This is equivalent to bankproducts/{invalidId}. Karate automatically joins the path segments with /
+    Given path 'bankproducts', "invalidId"
+    When method GET
+    Then status 400
+
+  # ----------------------------
   # UPDATE
   # ----------------------------
   Scenario: Update a bank product

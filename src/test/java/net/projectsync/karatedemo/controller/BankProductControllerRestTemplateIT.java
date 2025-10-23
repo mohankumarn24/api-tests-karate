@@ -99,6 +99,22 @@ class BankProductControllerRestTemplateIT {
         Assertions.assertThat(response.getBody().getTitle()).isEqualTo("Savings Account");
     }
 
+    // READ (by invalid ID)
+    @Test
+    void testGetProductByInvalidIdException() {
+
+        // Create one valid product (optional)
+        BankProduct bankProduct = restTemplate.postForEntity(baseUrl(), new BankProduct("Savings Account"), BankProduct.class).getBody();
+        assertThat(bankProduct).isNotNull();
+
+        // Hit endpoint with invalid ID (string instead of number)
+        ResponseEntity<BankProduct> response = restTemplate.getForEntity(baseUrl() + "/" + "invalidId", BankProduct.class);
+
+        // Assert HTTP 400
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        Assertions.assertThat(response.getBody()).isNotNull();  // response.getBody() -> BankProduct(id=null, title=null)
+    }
+
     // READ (all products)
     @Test
     void testGetAllProducts() {
