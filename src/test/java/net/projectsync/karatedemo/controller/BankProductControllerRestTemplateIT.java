@@ -55,8 +55,8 @@ class BankProductControllerRestTemplateIT {
     }
 
     private String baseUrl() {
-        return "http://localhost:" + port + "/bankproducts";
-        // or simply return "/bankproducts"
+        return "http://localhost:" + port + "/api/v1/bankproducts";
+        // or simply return "/api/v1/bankproducts"
     }
 
     // CREATE

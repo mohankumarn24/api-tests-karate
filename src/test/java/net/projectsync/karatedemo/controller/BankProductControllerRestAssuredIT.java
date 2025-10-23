@@ -53,7 +53,7 @@ class BankProductControllerRestAssuredIT {
                 .contentType(ContentType.JSON)
                 .body(product)
                 .when()
-                .post("/bankproducts")
+                .post("/api/v1/bankproducts")
                 .then()
                 .statusCode(201)
                 .body("id", notNullValue())
@@ -69,7 +69,7 @@ class BankProductControllerRestAssuredIT {
                         .contentType(ContentType.JSON)
                         .body(new BankProduct("Savings Account"))
                         .when()
-                        .post("/bankproducts")
+                        .post("/api/v1/bankproducts")
                         .then()
                         .statusCode(201)
                         .extract()
@@ -79,7 +79,7 @@ class BankProductControllerRestAssuredIT {
         // GET by ID
         RestAssured.given()
                 .when()
-                .get("/bankproducts/{id}", id)
+                .get("/api/v1/bankproducts/{id}", id)
                 .then()
                 .statusCode(200)
                 .body("id", equalTo(id.intValue()))
@@ -94,16 +94,16 @@ class BankProductControllerRestAssuredIT {
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(new BankProduct("Product 1"))
-                .post("/bankproducts");
+                .post("/api/v1/bankproducts");
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(new BankProduct("Product 2"))
-                .post("/bankproducts");
+                .post("/api/v1/bankproducts");
 
         // GET all
         RestAssured.given()
                 .when()
-                .get("/bankproducts")
+                .get("/api/v1/bankproducts")
                 .then()
                 .statusCode(200)
                 .body("size()", greaterThanOrEqualTo(2))
@@ -119,7 +119,7 @@ class BankProductControllerRestAssuredIT {
                         .contentType(ContentType.JSON)
                         .body(new BankProduct("Old Title"))
                         .when()
-                        .post("/bankproducts")
+                        .post("/api/v1/bankproducts")
                         .then()
                         .statusCode(201)
                         .extract()
@@ -134,7 +134,7 @@ class BankProductControllerRestAssuredIT {
                 .contentType(ContentType.JSON)
                 .body(updated)
                 .when()
-                .put("/bankproducts/{id}", id)
+                .put("/api/v1/bankproducts/{id}", id)
                 .then()
                 .statusCode(200)
                 .body("id", equalTo(id.intValue()))
@@ -150,7 +150,7 @@ class BankProductControllerRestAssuredIT {
                         .contentType(ContentType.JSON)
                         .body(new BankProduct("To Be Deleted"))
                         .when()
-                        .post("/bankproducts")
+                        .post("/api/v1/bankproducts")
                         .then()
                         .statusCode(201)
                         .extract()
@@ -160,14 +160,14 @@ class BankProductControllerRestAssuredIT {
         // DELETE
         RestAssured.given()
                 .when()
-                .delete("/bankproducts/{id}", id)
+                .delete("/api/v1/bankproducts/{id}", id)
                 .then()
                 .statusCode(204);
 
         // Confirm deletion
         RestAssured.given()
                 .when()
-                .get("/bankproducts/{id}", id)
+                .get("/api/v1/bankproducts/{id}", id)
                 .then()
                 .statusCode(404);
     }
@@ -178,7 +178,7 @@ class BankProductControllerRestAssuredIT {
 
         RestAssured.given()
                 .when()
-                .get("/bankproducts/{id}", 99999)
+                .get("/api/v1/bankproducts/{id}", 99999)
                 .then()
                 .statusCode(404);
     }
@@ -192,7 +192,7 @@ class BankProductControllerRestAssuredIT {
                 .contentType(ContentType.JSON)
                 .body(updated)
                 .when()
-                .put("/bankproducts/{id}", 99999)
+                .put("/api/v1/bankproducts/{id}", 99999)
                 .then()
                 .statusCode(404);
     }
@@ -202,7 +202,7 @@ class BankProductControllerRestAssuredIT {
 
         RestAssured.given()
                 .when()
-                .delete("/bankproducts/{id}", 99999)
+                .delete("/api/v1/bankproducts/{id}", 99999)
                 .then()
                 .statusCode(404);
     }
@@ -217,7 +217,7 @@ class BankProductControllerRestAssuredIT {
                 .contentType(ContentType.JSON)
                 .body(product)
                 .when()
-                .post("/bankproducts")
+                .post("/api/v1/bankproducts")
                 .then()
                 .statusCode(201)
                 .body("id", notNullValue())
@@ -233,7 +233,7 @@ class BankProductControllerRestAssuredIT {
                 .contentType(ContentType.JSON)
                 .body(product)
                 .when()
-                .post("/bankproducts")
+                .post("/api/v1/bankproducts")
                 .then()
                 .statusCode(201)
                 .body("id", notNullValue())

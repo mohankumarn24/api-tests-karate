@@ -10,7 +10,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bankproducts")
+@RequestMapping("/api/v1/bankproducts")
 @RequiredArgsConstructor
 public class BankProductController {
 
@@ -21,7 +21,7 @@ public class BankProductController {
     public ResponseEntity<BankProduct> createProduct(@Valid @RequestBody BankProduct product) {
         BankProduct created = bankProductService.createProduct(product);
         return ResponseEntity
-                .created(URI.create("/bankproducts/" + created.getId())) // Location header
+                .created(URI.create("/api/v1/bankproducts/" + created.getId())) // Location header
                 .body(created);
     }
 

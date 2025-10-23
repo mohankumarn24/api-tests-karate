@@ -29,7 +29,7 @@ class BankProductControllerTest {
     @MockBean
     private BankProductService service;
 
-    // CREATE: POST /bankproducts
+    // CREATE: POST /api/v1/bankproducts
     @Test
     void testCreateProduct() throws Exception {
 
@@ -39,16 +39,16 @@ class BankProductControllerTest {
 
         Mockito.when(service.createProduct(any(BankProduct.class))).thenReturn(saved);
 
-        mockMvc.perform(post("/bankproducts")
+        mockMvc.perform(post("/api/v1/bankproducts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/bankproducts/1"))
+                .andExpect(header().string("Location", "/api/v1/bankproducts/1"))
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Savings Account"));
     }
 
-    // READ: GET /bankproducts/{id} (found)
+    // READ: GET /api/v1/bankproducts/{id} (found)
     @Test
     void testGetProductByIdFound() throws Exception {
 
@@ -57,23 +57,23 @@ class BankProductControllerTest {
 
         Mockito.when(service.getProductById(1L)).thenReturn(Optional.of(product));
 
-        mockMvc.perform(get("/bankproducts/1"))
+        mockMvc.perform(get("/api/v1/bankproducts/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Savings Account"));
     }
 
-    // READ: GET /bankproducts/{id} (not found)
+    // READ: GET /api/v1/bankproducts/{id} (not found)
     @Test
     void testGetProductByIdNotFound() throws Exception {
 
         Mockito.when(service.getProductById(99L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/bankproducts/99"))
+        mockMvc.perform(get("/api/v1/bankproducts/99"))
                 .andExpect(status().isNotFound());
     }
 
-    // READ: GET /bankproducts (all products)
+    // READ: GET /api/v1/bankproducts (all products)
     @Test
     void testGetAllProducts() throws Exception {
 
@@ -84,14 +84,14 @@ class BankProductControllerTest {
 
         Mockito.when(service.getAllProducts()).thenReturn(List.of(p1, p2));
 
-        mockMvc.perform(get("/bankproducts"))
+        mockMvc.perform(get("/api/v1/bankproducts"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].title").value("Savings Account"))
                 .andExpect(jsonPath("$[1].title").value("Fixed Deposit"));
     }
 
-    // UPDATE: PUT /bankproducts/{id} (found)
+    // UPDATE: PUT /api/v1/bankproducts/{id} (found)
     @Test
     void testUpdateProductFound() throws Exception {
 
@@ -101,7 +101,7 @@ class BankProductControllerTest {
         Mockito.when(service.updateProduct(eq(1L), any(BankProduct.class)))
                 .thenReturn(Optional.of(updated));
 
-        mockMvc.perform(put("/bankproducts/1")
+        mockMvc.perform(put("/api/v1/bankproducts/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updated)))
                 .andExpect(status().isOk())
@@ -109,7 +109,7 @@ class BankProductControllerTest {
                 .andExpect(jsonPath("$.title").value("New Title"));
     }
 
-    // UPDATE: PUT /bankproducts/{id} (not found)
+    // UPDATE: PUT /api/v1/bankproducts/{id} (not found)
     @Test
     void testUpdateProductNotFound() throws Exception {
 
@@ -119,29 +119,29 @@ class BankProductControllerTest {
         Mockito.when(service.updateProduct(eq(99L), any(BankProduct.class)))
                 .thenReturn(Optional.empty());
 
-        mockMvc.perform(put("/bankproducts/99")
+        mockMvc.perform(put("/api/v1/bankproducts/99")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updated)))
                 .andExpect(status().isNotFound());
     }
 
-    // DELETE: DELETE /bankproducts/{id} (found)
+    // DELETE: DELETE /api/v1/bankproducts/{id} (found)
     @Test
     void testDeleteProductFound() throws Exception {
 
         Mockito.when(service.deleteProduct(1L)).thenReturn(true);
 
-        mockMvc.perform(delete("/bankproducts/1"))
+        mockMvc.perform(delete("/api/v1/bankproducts/1"))
                 .andExpect(status().isNoContent());
     }
 
-    // DELETE: DELETE /bankproducts/{id} (not found)
+    // DELETE: DELETE /api/v1/bankproducts/{id} (not found)
     @Test
     void testDeleteProductNotFound() throws Exception {
 
         Mockito.when(service.deleteProduct(99L)).thenReturn(false);
 
-        mockMvc.perform(delete("/bankproducts/99"))
+        mockMvc.perform(delete("/api/v1/bankproducts/99"))
                 .andExpect(status().isNotFound());
     }
 }
