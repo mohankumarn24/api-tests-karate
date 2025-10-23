@@ -4,14 +4,15 @@ Feature: CRUD tests for bankproducts API
   # API tests updates values in DB used by the application
   Background:
     * url baseUrl
-    * header Accept = 'application/json'
     * header Content-Type = 'application/json'
+    * header Accept = 'application/json'
 
   # ----------------------------
   # CREATE
   # ----------------------------
   Scenario: Create a new bank product
     * def sampleProduct = { "title": "My product" }
+    * param notify = true
     Given path 'bankproducts'
     And request sampleProduct
     When method POST
@@ -23,6 +24,7 @@ Feature: CRUD tests for bankproducts API
   # ----------------------------
   Scenario: Get a bank product by ID
     * def sampleProduct = { "title": "My product" }
+    * params { title: 'My product', type: 'Savings' }
     # Create product for this scenario
     Given path 'bankproducts'
     And request sampleProduct
@@ -79,3 +81,10 @@ Feature: CRUD tests for bankproducts API
     Given path 'bankproducts', productId
     When method GET
     Then status 404
+
+
+# ----------------------------
+# How to pass request params? Use below code
+#  * param notify = true --> one request param. Not used in this application. /bankproducts?title=My+product
+#  * params { title: 'My product', type: 'Savings' } --> one request param. Not used in this application. /bankproducts?title=My+product&type=Savings
+# ----------------------------
