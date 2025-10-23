@@ -23,6 +23,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Rollback       // Each test method runs in a transaction. After the test finishes, the transaction is rolled back automatically. Ensures complete isolation between tests
 class BankProductControllerRestTemplateIT {
 
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
     /**
      * @Testcontainers                          -> This JUnit 5 extension will take care of starting the container before tests and stopping it after tests
      * If the container is a static field       -> container will be started once before all the tests and stopped after all the tests (all testes share this container)
@@ -48,12 +54,6 @@ class BankProductControllerRestTemplateIT {
             registry.add("spring.jpa.show-sql", () -> "true");
     }
 
-    @LocalServerPort
-    private int port;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
-
     private String baseUrl() {
         return "http://localhost:" + port + "/bankproducts";
         // or simply return "/bankproducts"
@@ -63,11 +63,11 @@ class BankProductControllerRestTemplateIT {
     @Test
     void testCreateProduct() {
 
-        BankProduct product = new BankProduct("Fixed Deposit");
+        BankProduct bankProduct = new BankProduct("Fixed Deposit");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<BankProduct> request = new HttpEntity<>(product, headers);
+        HttpEntity<BankProduct> request = new HttpEntity<>(bankProduct, headers);
 
         ResponseEntity<BankProduct> response = restTemplate.postForEntity(baseUrl(), request, BankProduct.class);
 
@@ -89,10 +89,10 @@ class BankProductControllerRestTemplateIT {
     void testGetProductById() {
 
         // First create a product
-        BankProduct product = restTemplate.postForEntity(baseUrl(), new BankProduct("Savings Account"), BankProduct.class).getBody();
-        assertThat(product).isNotNull();
+        BankProduct bankProduct = restTemplate.postForEntity(baseUrl(), new BankProduct("Savings Account"), BankProduct.class).getBody();
+        assertThat(bankProduct).isNotNull();
 
-        ResponseEntity<BankProduct> response = restTemplate.getForEntity(baseUrl() + "/" + product.getId(), BankProduct.class);
+        ResponseEntity<BankProduct> response = restTemplate.getForEntity(baseUrl() + "/" + bankProduct.getId(), BankProduct.class);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(response.getBody()).isNotNull();
@@ -119,16 +119,16 @@ class BankProductControllerRestTemplateIT {
     void testUpdateProduct() {
 
         // Create a product first
-        BankProduct product = restTemplate.postForEntity(baseUrl(), new BankProduct("Old Title"), BankProduct.class).getBody();
-        assertThat(product).isNotNull();
+        BankProduct bankProduct = restTemplate.postForEntity(baseUrl(), new BankProduct("Old Title"), BankProduct.class).getBody();
+        assertThat(bankProduct).isNotNull();
 
         // Prepare update
-        product.setTitle("New Title");
+        bankProduct.setTitle("New Title");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<BankProduct> request = new HttpEntity<>(product, headers);
+        HttpEntity<BankProduct> request = new HttpEntity<>(bankProduct, headers);
 
-        ResponseEntity<BankProduct> response = restTemplate.exchange(baseUrl() + "/" + product.getId(), HttpMethod.PUT, request, BankProduct.class);
+        ResponseEntity<BankProduct> response = restTemplate.exchange(baseUrl() + "/" + bankProduct.getId(), HttpMethod.PUT, request, BankProduct.class);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(response.getBody().getTitle()).isEqualTo("New Title");
@@ -138,16 +138,16 @@ class BankProductControllerRestTemplateIT {
     @Test
     void testDeleteProductUsingExchange() {
 
-        BankProduct product = restTemplate.postForEntity(baseUrl(), new BankProduct("To Be Deleted"), BankProduct.class).getBody();
-        assertThat(product).isNotNull();
+        BankProduct bankProduct = restTemplate.postForEntity(baseUrl(), new BankProduct("To Be Deleted"), BankProduct.class).getBody();
+        assertThat(bankProduct).isNotNull();
 
-        ResponseEntity<Void> response = restTemplate.exchange(baseUrl() + "/" + product.getId(), HttpMethod.DELETE, null, Void.class);
+        ResponseEntity<Void> response = restTemplate.exchange(baseUrl() + "/" + bankProduct.getId(), HttpMethod.DELETE, null, Void.class);
 
         // Assert DELETE HTTP status
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
         // Confirm deletion
-        ResponseEntity<BankProduct> checkResponse = restTemplate.getForEntity(baseUrl() + "/" + product.getId(), BankProduct.class);
+        ResponseEntity<BankProduct> checkResponse = restTemplate.getForEntity(baseUrl() + "/" + bankProduct.getId(), BankProduct.class);
         Assertions.assertThat(checkResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
@@ -155,14 +155,14 @@ class BankProductControllerRestTemplateIT {
     @Test
     void testDeleteProductUsingDelete() {
 
-        BankProduct product = restTemplate.postForEntity(baseUrl(), new BankProduct("Delete Simple"), BankProduct.class).getBody();
-        Assertions.assertThat(product).isNotNull();
+        BankProduct bankProduct = restTemplate.postForEntity(baseUrl(), new BankProduct("Delete Simple"), BankProduct.class).getBody();
+        Assertions.assertThat(bankProduct).isNotNull();
 
         // Simple delete
-        restTemplate.delete(baseUrl() + "/" + product.getId());
+        restTemplate.delete(baseUrl() + "/" + bankProduct.getId());
 
         // Confirm deletion
-        ResponseEntity<BankProduct> checkResponse = restTemplate.getForEntity(baseUrl() + "/" + product.getId(), BankProduct.class);
+        ResponseEntity<BankProduct> checkResponse = restTemplate.getForEntity(baseUrl() + "/" + bankProduct.getId(), BankProduct.class);
         Assertions.assertThat(checkResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 }
